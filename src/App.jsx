@@ -181,90 +181,76 @@ const App = () => {
     }
   };
 
-  // Translation function that would call your backend API
-  const translateText = async (text, targetLang) => {
-    // IMPORTANT: In a real app, this would call YOUR backend server
-    // which would then call Google Translate API with your secure API key
-    
+  // Translation function using LibreTranslate (free, no API key needed)
+  const translateText = async (text, targetLang, sourceLang = 'auto') => {
     try {
-      // Example of how to call your backend (you would need to set this up):
-      /*
-      const response = await fetch('https://your-backend.com/api/translate', {
+      // Skip translation if source and target are the same
+      if (sourceLang === targetLang && sourceLang !== 'auto') {
+        return text;
+      }
+
+      // Check cache first to reduce API calls
+      const cacheKey = `trans_${text}_${targetLang}`;
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        return cached;
+      }
+
+      // LibreTranslate API call (free, no key required)
+      const response = await fetch('https://libretranslate.de/translate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text: text,
-          targetLang: targetLang,
-          sourceLang: 'auto' // auto-detect source language
+          q: text,
+          source: sourceLang,
+          target: targetLang,
+          format: 'text'
         })
       });
-      
-      const data = await response.json();
-      return data.translatedText;
-      */
-      
-      // For demo purposes, using a simple simulation
-      // In production, replace this with actual API call above
-      const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-      await delay(100); // Simulate API delay
-      
-      // Check if we have a predefined translation
-      const commonTranslations = {
-        'Buy groceries': {
-          es: 'Comprar comestibles',
-          fr: 'Acheter des courses',
-          de: 'Lebensmittel kaufen',
-          it: 'Comprare generi alimentari',
-          pt: 'Comprar mantimentos',
-          zh: '买杂货',
-          ja: '食料品を買う',
-          ko: '장보기',
-          ar: 'شراء البقالة',
-          hi: 'किराने का सामान खरीदें',
-          ru: 'Купить продукты'
-        },
-        'Call mom': {
-          es: 'Llamar a mamá',
-          fr: 'Appeler maman',
-          de: 'Mama anrufen',
-          it: 'Chiamare mamma',
-          pt: 'Ligar para mamãe',
-          zh: '给妈妈打电话',
-          ja: 'お母さんに電話する',
-          ko: '엄마에게 전화하기',
-          ar: 'اتصل بأمي',
-          hi: 'माँ को फोन करें',
-          ru: 'Позвонить маме'
-        },
-        'Study for exam': {
-          es: 'Estudiar para el examen',
-          fr: 'Étudier pour l\'examen',
-          de: 'Für die Prüfung lernen',
-          it: 'Studiare per l\'esame',
-          pt: 'Estudar para o exame',
-          zh: '为考试学习',
-          ja: '試験勉強をする',
-          ko: '시험 공부하기',
-          ar: 'الدراسة للامتحان',
-          hi: 'परीक्षा के लिए अध्ययन करें',
-          ru: 'Учиться к экзамену'
-        }
-      };
 
-      if (commonTranslations[text] && commonTranslations[text][targetLang]) {
-        return commonTranslations[text][targetLang];
+      if (!response.ok) {
+        // Try fallback API if LibreTranslate fails
+        return await translateWithMyMemory(text, targetLang, sourceLang);
       }
 
-      // For demo: return text with language indicator
-      return `[${targetLang}] ${text}`;
-      
+      const data = await response.json();
+      const translatedText = data.translatedText;
+
+      // Cache the translation
+      localStorage.setItem(cacheKey, translatedText);
+
+      return translatedText;
     } catch (error) {
       console.error('Translation error:', error);
-      // Fallback: return original text if translation fails
-      return text;
+      // Try fallback API
+      try {
+        return await translateWithMyMemory(text, targetLang, sourceLang);
+      } catch (fallbackError) {
+        // Return original text with language indicator if all fails
+        return `[${targetLang}] ${text}`;
+      }
     }
+  };
+
+  // Fallback translation using MyMemory API
+  const translateWithMyMemory = async (text, targetLang, sourceLang = 'en') => {
+    const source = sourceLang === 'auto' ? 'en' : sourceLang;
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${targetLang}`;
+    
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data.responseStatus === 200) {
+      const translatedText = data.responseData.translatedText;
+      // Cache the translation
+      const cacheKey = `trans_${text}_${targetLang}`;
+      localStorage.setItem(cacheKey, translatedText);
+      return translatedText;
+    }
+    
+    throw new Error('MyMemory translation failed');
   };
 
   const addTodo = async () => {
@@ -277,20 +263,46 @@ const App = () => {
         originalLang: currentLang
       };
 
-      // Translate to all other languages
-      setIsTranslating(true);
-      const translationPromises = Object.keys(languages)
-        .filter(lang => lang !== currentLang)
-        .map(async (lang) => {
-          const translated = await translateText(inputValue, lang);
-          newTodo.translations[lang] = translated;
-        });
-
-      await Promise.all(translationPromises);
-      setIsTranslating(false);
-
+      // Add todo immediately for better UX
       setTodos([...todos, newTodo]);
       setInputValue('');
+
+      // Translate in the background
+      setIsTranslating(true);
+      
+      try {
+        const translationPromises = Object.keys(languages)
+          .filter(lang => lang !== currentLang)
+          .map(async (lang) => {
+            try {
+              const translated = await translateText(inputValue, lang, currentLang);
+              return { lang, translated };
+            } catch (error) {
+              console.error(`Failed to translate to ${lang}:`, error);
+              return { lang, translated: inputValue };
+            }
+          });
+
+        const translations = await Promise.all(translationPromises);
+        
+        // Update the todo with translations
+        setTodos(prevTodos => 
+          prevTodos.map(todo => {
+            if (todo.id === newTodo.id) {
+              const updatedTranslations = { ...todo.translations };
+              translations.forEach(({ lang, translated }) => {
+                updatedTranslations[lang] = translated;
+              });
+              return { ...todo, translations: updatedTranslations };
+            }
+            return todo;
+          })
+        );
+      } catch (error) {
+        console.error('Translation error:', error);
+      } finally {
+        setIsTranslating(false);
+      }
     }
   };
 
