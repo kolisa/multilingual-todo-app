@@ -19,7 +19,17 @@ const App = () => {
     ko: { name: '한국어', flag: '🇰🇷' },
     ar: { name: 'العربية', flag: '🇸🇦' },
     hi: { name: 'हिन्दी', flag: '🇮🇳' },
-    ru: { name: 'Русский', flag: '🇷🇺' }
+    ru: { name: 'Русский', flag: '🇷🇺' },
+    // South African languages
+    af: { name: 'Afrikaans', flag: '🇿🇦' },
+    zu: { name: 'isiZulu', flag: '🇿🇦' },
+    xh: { name: 'isiXhosa', flag: '🇿🇦' },
+    st: { name: 'Sesotho', flag: '🇿🇦' },
+    tn: { name: 'Setswana', flag: '🇿🇦' },
+    ts: { name: 'Xitsonga', flag: '🇿🇦' },
+    ss: { name: 'siSwati', flag: '🇿🇦' },
+    ve: { name: 'Tshivenda', flag: '🇿🇦' },
+    nr: { name: 'isiNdebele', flag: '🇿🇦' }
   };
 
   const translations = {
@@ -178,6 +188,124 @@ const App = () => {
       inProgress: 'В процессе',
       completed: 'Завершено',
       markInProgress: 'Отметить как В процессе'
+    },
+    // South African languages translations
+    af: {
+      title: 'Taaklys',
+      placeholder: 'Voeg nuwe taak by...',
+      addButton: 'Voeg by',
+      empty: 'Nog geen take nie. Voeg een hierbo by!',
+      complete: 'Voltooi',
+      delete: 'Verwyder',
+      summary: 'Taak Opsomming',
+      notStarted: 'Nie Begin',
+      inProgress: 'In Proses',
+      completed: 'Voltooid',
+      markInProgress: 'Merk as In Proses'
+    },
+    zu: {
+      title: 'Uhlu Lwemisebenzi',
+      placeholder: 'Engeza umsebenzi omusha...',
+      addButton: 'Engeza',
+      empty: 'Ayikho imisebenzi okwamanje. Engeza eyodwa ngenhla!',
+      complete: 'Qeda',
+      delete: 'Susa',
+      summary: 'Isifinyezo Somsebenzi',
+      notStarted: 'Akuqaliwe',
+      inProgress: 'Kuyaqhubeka',
+      completed: 'Kuqediwe',
+      markInProgress: 'Maka njengokuthi Kuyaqhubeka'
+    },
+    xh: {
+      title: 'Uluhlu Lwemisebenzi',
+      placeholder: 'Yongeza umsebenzi omtsha...',
+      addButton: 'Yongeza',
+      empty: 'Akukho misebenzi okwangoku. Yongeza enye ngasentla!',
+      complete: 'Gqiba',
+      delete: 'Cima',
+      summary: 'Isishwankathelo Somsebenzi',
+      notStarted: 'Ayiqalwanga',
+      inProgress: 'Iyaqhubeka',
+      completed: 'Igqityiwe',
+      markInProgress: 'Phawula njengokuthi Iyaqhubeka'
+    },
+    st: {
+      title: 'Lenane la Mesebetsi',
+      placeholder: 'Kenya mosebetsi o motjha...',
+      addButton: 'Kenya',
+      empty: 'Ha ho na mesebetsi hajoale. Kenya e nngwe ka hodimo!',
+      complete: 'Qeta',
+      delete: 'Hlakola',
+      summary: 'Kakaretso ya Mosebetsi',
+      notStarted: 'Ha e so Qale',
+      inProgress: 'E ntse E tsoela Pele',
+      completed: 'E Phethilwe',
+      markInProgress: 'Tshwaya e le E ntse E tsoela Pele'
+    },
+    tn: {
+      title: 'Lenaane la Ditiro',
+      placeholder: 'Tsenya tiro e ntšha...',
+      addButton: 'Tsenya',
+      empty: 'Ga go na ditiro gajaana. Tsenya nngwe fa godimo!',
+      complete: 'Fetsa',
+      delete: 'Phimola',
+      summary: 'Tshobokanyo ya Tiro',
+      notStarted: 'Ga e a Simolola',
+      inProgress: 'E a Tswelela',
+      completed: 'E Fedile',
+      markInProgress: 'Tshwaya e le E a Tswelela'
+    },
+    ts: {
+      title: 'Nxaxamelo wa Mintirho',
+      placeholder: 'Engeta ntirho wuntshwa...',
+      addButton: 'Engeta',
+      empty: 'A ku na mintirho sweswi. Engeta yin\'wana ehenhla!',
+      complete: 'Hetisa',
+      delete: 'Susa',
+      summary: 'Nkatsakanyo wa Ntirho',
+      notStarted: 'A wu Sunguriwanga',
+      inProgress: 'Wu le ku Endliweni',
+      completed: 'Wu Hetisiwile',
+      markInProgress: 'Fungha tanihi Wu le ku Endliweni'
+    },
+    ss: {
+      title: 'Luhla Lwemisebenti',
+      placeholder: 'Ngeta umsebenti lomusha...',
+      addButton: 'Ngeta',
+      empty: 'Kute misebenti nyalo. Ngeta lenye ngenhla!',
+      complete: 'Cedzela',
+      delete: 'Susa',
+      summary: 'Sifinyeto Semsebenti',
+      notStarted: 'Akucalwanga',
+      inProgress: 'Siyachubeka',
+      completed: 'Sicedzile',
+      markInProgress: 'Maka ngekutsi Siyachubeka'
+    },
+    ve: {
+      title: 'Mutevhe wa Mishumo',
+      placeholder: 'Ṅwalisani mushumo muswa...',
+      addButton: 'Ṅwalisa',
+      empty: 'A hu na mishumo zwino. Ṅwalisani iṅwe afho nṱha!',
+      complete: 'Fhedza',
+      delete: 'Bvisa',
+      summary: 'Pfufho ya Mushumo',
+      notStarted: 'A u athou U thoma',
+      inProgress: 'U khou Bvelaphanda',
+      completed: 'Wo Fhela',
+      markInProgress: 'Swaya sa U khou Bvelaphanda'
+    },
+    nr: {
+      title: 'Irhelo Lemisebenzi',
+      placeholder: 'Faka umsebenzi omutjha...',
+      addButton: 'Faka',
+      empty: 'Ayikho imisebenzi njenganje. Faka enye phezulu!',
+      complete: 'Qeda',
+      delete: 'Susa',
+      summary: 'Isifinyezo Somsebenzi',
+      notStarted: 'Ayikaqalwa',
+      inProgress: 'Iyaragela',
+      completed: 'Iphelile',
+      markInProgress: 'Maka bona Iyaragela'
     }
   };
 
